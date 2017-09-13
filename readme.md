@@ -185,22 +185,6 @@ composer create-project --prefer-dist laravel/laravel laravel5_5 "5.5.*"
     ```
 
 ## 使用参考
-
-- dingo/api
-
-    `routes/api.php` 下注册 `dingo/api` 路由, 例如:
-    
-    ```php
-    $api = app('Dingo\Api\Routing\Router'); 
-    
-    $api->version('v1', function ($api) {
-        $api->get('/', function () {
-            return 'a Dingo\Api examples';
-        });
-    });
-    ```
-    
-    具体使用详情查看 [https://github.com/dingo/api/wiki](https://github.com/dingo/api/wiki)
     
 - zizaco/entrust
 
@@ -270,20 +254,39 @@ composer create-project --prefer-dist laravel/laravel laravel5_5 "5.5.*"
     
  - JWT 验证登录注册例子:  
  
-    Api/Auth/LoginController.php
+    父控制器位于: `app/Http/ApiControllers/Controller.php`
+    
+    ```php
+    <?php
+    
+    namespace App\Http\ApiControllers;
+    
+    use Dingo\Api\Routing\Helpers;
+    use Illuminate\Foundation\Bus\DispatchesJobs;
+    use Illuminate\Routing\Controller as BaseController;
+    use Illuminate\Foundation\Validation\ValidatesRequests;
+    use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+    
+    class Controller extends BaseController
+    {
+        use AuthorizesRequests, DispatchesJobs, ValidatesRequests, Helpers;
+    }
+    ```
+ 
+    登录控制器位于: `app/Http/ApiControllers/Auth/LoginController.php`
     
      ```php
      <?php
+     namespace App\Http\ApiControllers\Auth;
      
-     namespace App\Http\Api\Auth;
-     
-     use App\User;
+     use App\Http\ApiControllers\Controller;
      use Illuminate\Foundation\Auth\AuthenticatesUsers;
      use Illuminate\Http\Request;
-     use App\Http\Controllers\Controller;
      use Illuminate\Support\Facades\Hash;
      use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
      use Tymon\JWTAuth\Facades\JWTAuth;
+     use App\User;
+     
      
      class LoginController extends Controller
      {
@@ -292,16 +295,19 @@ composer create-project --prefer-dist laravel/laravel laravel5_5 "5.5.*"
          public function login(Request $request)
          {
              $user = User::where('email', $request->email)->orWhere('name', $request->email)->first();
+     
              if($user && Hash::check($request->get('password'), $user->password)) {
                  $token = JWTAuth::fromUser($user);
                  return $this->sendLoginResponse($request, $token);
              }
-             return $this->sendFailedLoginResponse($request);
+     
+             return $this->sendFailedLoginResponse();
          }
      
          public function sendLoginResponse(Request $request, $token)
          {
              $this->clearLoginAttempts($request);
+     
              return $this->authenticated($token);
          }
      
@@ -326,19 +332,20 @@ composer create-project --prefer-dist laravel/laravel laravel5_5 "5.5.*"
      }
      ```
      
-     Api/Auth/RegisterController.php
+     注册控制器位于: `app/Http/ApiControllers/Auth/RegisterController.php`
      
      ```php
      <?php
-     namespace App\Http\Api\Auth;
+     namespace App\Http\ApiControllers\Auth;
      
      use App\Http\Controllers\Controller;
-     use App\User;
-     use Dingo\Api\Exception\StoreResourceFailedException;
      use Illuminate\Foundation\Auth\RegistersUsers;
      use Illuminate\Http\Request;
      use Illuminate\Support\Facades\Validator;
+     use Dingo\Api\Exception\StoreResourceFailedException;
      use Tymon\JWTAuth\Facades\JWTAuth;
+     use App\User;
+     
      
      class RegisterController extends Controller
      {
@@ -347,22 +354,29 @@ composer create-project --prefer-dist laravel/laravel laravel5_5 "5.5.*"
          public function register(Request $request)
          {
              $validator = $this->validator($request->all());
+     
              if($validator->fails()) {
                  throw new StoreResourceFailedException("Validation Error", $validator->errors());
              }
-             $user = $this->create($request->all());
-             if($user) {
-                 $token = JWTAuth::fromUser($user);
-                 return $this->response->array([
-                     "token" => $token,
+     
+             if($user = $this->create($request->all())) {
+                 $result = [
+                     "token" => JWTAuth::fromUser($user),
                      "message" => "User created",
                      "status_code" => 201
-                 ]);
+                 ];
+     
+                 return $this->response->array($result);
              } else {
                  return $this->response->error("User Not Found...", 404);
              }
          }
      
+         /**
+          * 字段验证
+          * @param array $data
+          * @return mixed
+          */
          protected function validator(array $data)
          {
              return Validator::make($data, [
@@ -372,14 +386,35 @@ composer create-project --prefer-dist laravel/laravel laravel5_5 "5.5.*"
              ]);
          }
      
+         /**
+          * 用户创建
+          * @param array $data
+          * @return $this|\Illuminate\Database\Eloquent\Model
+          */
          protected function create(array $data)
          {
              return User::create([
                  'name' => $data['name'],
                  'email' => $data['email'],
-                 'password' => bcrypt($data['password']),
+                 'password' => bcrypt($data['password'])
              ]);
          }
      }
      ```
+- dingo/api
 
+    `routes/api.php` 下
+    
+    ```php
+    /** @var Dingo\Api\Routing\Router $api */
+    $api = app(Dingo\Api\Routing\Router::class);
+    
+    $api->version('v1', function (Dingo\Api\Routing\Router $api) {
+        $api->post('login', 'App\Http\ApiControllers\Auth\LoginController@login');
+        $api->post('register', 'App\Http\ApiControllers\Auth\RegisterController@register');
+    
+        $api->post('auth/refresh-token', ['middleware' => 'jwt.refresh', function() {}]);
+    });
+    ```
+    
+    具体使用详情查看 [https://github.com/dingo/api/wiki](https://github.com/dingo/api/wiki)
