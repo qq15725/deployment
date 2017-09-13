@@ -1,14 +1,20 @@
 基于 laravel5.5 , 记录如何构建部署自用常用包.
 
+## 创建 laravel5.5 项目
+
+```shell
+composer create-project --prefer-dist laravel/laravel laravel5_5 "5.5.*"
+```
+
 ## 使用的包
 
-- [dingo/api](https://github.com/dingo/api) `一个 RESTful API 包`
-- [tymon/jwt-auth](https://github.com/tymondesigns/jwt-auth) `JSON Web Token 身份验证包`
-- [zizaco/entrust](https://github.com/Zizaco/entrust) `角色权限包`
+- [dingo/api](https://github.com/dingo/api) `一个 RESTful API 包.`
+- [tymon/jwt-auth](https://github.com/tymondesigns/jwt-auth) `JSON Web Token 身份验证包.`
+- [zizaco/entrust](https://github.com/Zizaco/entrust) `角色权限包.`
 
 自造
     
-- [wxm/ddoc](https://github.com/qq15725/ddoc) 提供接口文档, 数据库字典文档, 网页呈现.
+- [wxm/ddoc](https://github.com/qq15725/ddoc) `提供接口文档, 数据库字典文档, 网页呈现.`
 
 ## 安装
 
