@@ -418,3 +418,7 @@ composer create-project --prefer-dist laravel/laravel laravel5_5 "5.5.*"
     ```
     
     具体使用详情查看 [https://github.com/dingo/api/wiki](https://github.com/dingo/api/wiki)
+
+## License
+
+The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
