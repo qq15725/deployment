@@ -2,9 +2,9 @@
 
 ## 使用的包
 
-- [dingo/api](https://github.com/dingo/api) 一个 RESTful API 包
-- [tymon/jwt-auth](https://github.com/tymondesigns/jwt-auth) JSON Web Token 身份验证包
-- [zizaco/entrust](https://github.com/Zizaco/entrust) 角色权限包
+- [dingo/api](https://github.com/dingo/api) `一个 RESTful API 包`
+- [tymon/jwt-auth](https://github.com/tymondesigns/jwt-auth) `JSON Web Token 身份验证包`
+- [zizaco/entrust](https://github.com/Zizaco/entrust) `角色权限包`
 
 自造
     
@@ -28,7 +28,7 @@
             "type": "vcs",
             "url": "https://github.com/qq15725/entrust"
         }
-    ],
+    ]
     ```
 
 2. `composer.json` 添加 `require` , 执行 `composer update` .
@@ -39,7 +39,7 @@
         "zizaco/entrust": "v0.5.0beta",
         "dingo/api": "v1.0.0-beta10",
         "tymon/jwt-auth": "1.0.*@dev"
-    },
+    }
     ```
     
 3. 发布资源
@@ -70,7 +70,7 @@
 
 1. Role
 
-    ```
+    ```php
     <?php namespace App;
     
     use Zizaco\Entrust\EntrustRole;
@@ -94,7 +94,7 @@
     
 2. User
 
-    ```
+    ```php
     <?php
     
     use Zizaco\Entrust\Traits\EntrustUserTrait;
