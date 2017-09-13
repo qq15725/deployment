@@ -260,3 +260,119 @@ composer create-project --prefer-dist laravel/laravel laravel5_5 "5.5.*"
     
     具体使用详情查看  [https://github.com/Zizaco/entrust](https://github.com/Zizaco/entrust)
     
+    
+ - auth 例子
+ 
+    Api/Auth/LoginController.php
+    
+     ```php
+     <?php
+     
+     namespace App\Http\Api\Auth;
+     
+     use App\User;
+     use Illuminate\Foundation\Auth\AuthenticatesUsers;
+     use Illuminate\Http\Request;
+     use App\Http\Controllers\Controller;
+     use Illuminate\Support\Facades\Hash;
+     use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+     use Tymon\JWTAuth\Facades\JWTAuth;
+     
+     class LoginController extends Controller
+     {
+         use AuthenticatesUsers;
+     
+         public function login(Request $request)
+         {
+             $user = User::where('email', $request->email)->orWhere('name', $request->email)->first();
+             if($user && Hash::check($request->get('password'), $user->password)) {
+                 $token = JWTAuth::fromUser($user);
+                 return $this->sendLoginResponse($request, $token);
+             }
+             return $this->sendFailedLoginResponse($request);
+         }
+     
+         public function sendLoginResponse(Request $request, $token)
+         {
+             $this->clearLoginAttempts($request);
+             return $this->authenticated($token);
+         }
+     
+         public function authenticated($token)
+         {
+             return $this->response->array([
+                 'token' => $token,
+                 'status_code' => 200,
+                 'message' => 'User Authenticated'
+             ]);
+         }
+     
+         public function sendFailedLoginResponse()
+         {
+             throw new UnauthorizedHttpException("Bad Credentials");
+         }
+     
+         public function logout()
+         {
+             $this->guard()->logout();
+         }
+     }
+     ```
+     
+     Api/Auth/RegisterController.php
+     
+     ```php
+     <?php
+     namespace App\Http\Api\Auth;
+     
+     use App\Http\Controllers\Controller;
+     use App\User;
+     use Dingo\Api\Exception\StoreResourceFailedException;
+     use Illuminate\Foundation\Auth\RegistersUsers;
+     use Illuminate\Http\Request;
+     use Illuminate\Support\Facades\Validator;
+     use Tymon\JWTAuth\Facades\JWTAuth;
+     
+     class RegisterController extends Controller
+     {
+         use RegistersUsers;
+     
+         public function register(Request $request)
+         {
+             $validator = $this->validator($request->all());
+             if($validator->fails()) {
+                 throw new StoreResourceFailedException("Validation Error", $validator->errors());
+             }
+             $user = $this->create($request->all());
+             if($user) {
+                 $token = JWTAuth::fromUser($user);
+                 return $this->response->array([
+                     "token" => $token,
+                     "message" => "User created",
+                     "status_code" => 201
+                 ]);
+             } else {
+                 return $this->response->error("User Not Found...", 404);
+             }
+         }
+     
+         protected function validator(array $data)
+         {
+             return Validator::make($data, [
+                 'name' => 'required|unique:users',
+                 'email' => 'required|email|max:255|unique:users',
+                 'password' => 'required|min:6',
+             ]);
+         }
+     
+         protected function create(array $data)
+         {
+             return User::create([
+                 'name' => $data['name'],
+                 'email' => $data['email'],
+                 'password' => bcrypt($data['password']),
+             ]);
+         }
+     }
+     ```
+
