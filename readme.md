@@ -12,7 +12,7 @@
 
 ## 安装
 
-1. 截止更新日期, 修复 bug 及兼容 laravel5.5, 添加自定义 `repositories` 地址.
+1. 截止更新日期, 修复 bug 及兼容 laravel5.5, `composer.json` 需要添加自定义 `repositories` 地址.
 
     ```php
      "repositories": [
@@ -66,4 +66,43 @@
     php artisan entrust:migration
     ```
     
-## 明天再写
+## 创建权限需要的 Models
+
+1. Role
+
+    ```
+    <?php namespace App;
+    
+    use Zizaco\Entrust\EntrustRole;
+    
+    class Role extends EntrustRole
+    {
+    }
+    ```
+    
+1. Permission
+    
+    ```php
+    <?php namespace App;
+    
+    use Zizaco\Entrust\EntrustPermission;
+    
+    class Permission extends EntrustPermission
+    {
+    }
+    ```
+    
+2. User
+
+    ```
+    <?php
+    
+    use Zizaco\Entrust\Traits\EntrustUserTrait;
+    
+    class User extends Eloquent
+    {
+        use EntrustUserTrait; // add this trait to your user model
+    
+        ...
+    }
+    ```
