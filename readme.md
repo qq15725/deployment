@@ -43,7 +43,7 @@ composer create-project --prefer-dist laravel/laravel laravel5_5 "5.5.*"
     "require": {
         "wxm/ddoc": "1.0.*@dev",
         "zizaco/entrust": "v0.5.0beta",
-        "dingo/api": "v1.0.0-beta10",
+        "dingo/api": "v1.0.0-beta11",
         "tymon/jwt-auth": "1.0.*@dev"
     }
     ```
