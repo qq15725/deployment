@@ -74,6 +74,23 @@ composer create-project --prefer-dist laravel/laravel laravel5_5 "5.5.*"
     php artisan entrust:migration
     ```
     
+5. 生成 JWT 所需要的密钥
+    
+    ```shell
+    php artisan jwt:secret
+    ```
+    
+6. 为 dingo/api 添加 `.env` 配置
+
+    例子:
+     
+    ```
+    API_STANDARDS_TREE=vnd
+    API_SUBTYPE=emall
+    API_PREFIX=api
+    API_VERSION=v1
+    ```
+    
 ## 创建 Models
 
 1. Role
