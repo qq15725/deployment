@@ -1,4 +1,4 @@
-基于 laravel5.5 , 记录如何构建部署自用常用包.
+基于 Laravel5.5 部署一套 RESTful API 高效开发模板  
 
 ## 创建 laravel5.5 项目
 
@@ -6,7 +6,7 @@
 composer create-project --prefer-dist laravel/laravel laravel5_5 "5.5.*"
 ```
 
-## 使用的包
+## 推荐使用的包
 
 - [dingo/api](https://github.com/dingo/api) `一个 RESTful API 包.`
 - [tymon/jwt-auth](https://github.com/tymondesigns/jwt-auth) `JSON Web Token 身份验证包.`
