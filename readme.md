@@ -121,7 +121,7 @@ composer create-project --prefer-dist laravel/laravel laravel5_5 "5.5.*"
     
 3. User
 
-    结合 jwt 验证和角色权限的用户模型例子:  
+    结合 JWT 验证和角色权限的用户模型例子:  
 
     ```php
     <?php
@@ -176,3 +176,87 @@ composer create-project --prefer-dist laravel/laravel laravel5_5 "5.5.*"
         }
     }
     ```
+
+## 使用
+
+- dingo/api
+
+    `routes/api.php` 下注册 `dingo/api` 路由, 例如:
+    
+    ```php
+    $api = app('Dingo\Api\Routing\Router'); 
+    
+    $api->version('v1', function ($api) {
+        $api->get('/', function () {
+            return 'a Dingo\Api examples';
+        });
+    });
+    ```
+    
+    具体使用详情查看 [https://github.com/dingo/api/wiki](https://github.com/dingo/api/wiki)
+    
+- zizaco/entrust
+
+    创建角色
+    
+    ```php
+    $owner = new Role();
+    $owner->name         = 'owner';
+    $owner->display_name = 'Project Owner'; // optional
+    $owner->description  = 'User is the owner of a given project'; // optional
+    $owner->save();
+    
+    $admin = new Role();
+    $admin->name         = 'admin';
+    $admin->display_name = 'User Administrator'; // optional
+    $admin->description  = 'User is allowed to manage and edit other users'; // optional
+    $admin->save();
+    ```
+    
+    分配角色给用户
+    
+    ```php
+    $user = User::where('username', '=', 'michele')->first();
+    
+    // role attach alias
+    $user->attachRole($admin); // parameter can be an Role object, array, or id
+    
+    // or eloquent's original technique
+    $user->roles()->attach($admin->id); // id only
+    ```
+    
+    创建权限
+    
+    ```php
+    $createPost = new Permission();
+    $createPost->name         = 'create-post';
+    $createPost->display_name = 'Create Posts'; // optional
+    // Allow a user to...
+    $createPost->description  = 'create new blog posts'; // optional
+    $createPost->save();
+    
+    $editUser = new Permission();
+    $editUser->name         = 'edit-user';
+    $editUser->display_name = 'Edit Users'; // optional
+    // Allow a user to...
+    $editUser->description  = 'edit existing users'; // optional
+    $editUser->save();
+    
+    $admin->attachPermission($createPost);
+    // equivalent to $admin->perms()->sync(array($createPost->id));
+    
+    $owner->attachPermissions(array($createPost, $editUser));
+    // equivalent to $owner->perms()->sync(array($createPost->id, $editUser->id));
+    ```
+    
+    检查角色及权限
+    
+    ```php
+    $user->hasRole('owner');   // false
+    $user->hasRole('admin');   // true
+    $user->can('edit-user');   // false
+    $user->can('create-post'); // true
+    ```
+    
+    具体使用详情查看  [https://github.com/Zizaco/entrust](https://github.com/Zizaco/entrust)
+    
