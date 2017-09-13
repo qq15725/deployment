@@ -69,9 +69,14 @@ composer create-project --prefer-dist laravel/laravel laravel5_5 "5.5.*"
     
 4. 执行数据库迁移
 
-    执行 `Zizaco\Entrust` 数据库迁移
+    获得 `Zizaco\Entrust` 需要的迁移文件
     ```shell
     php artisan entrust:migration
+    ```
+    
+    执行数据库迁移
+    ```shell
+    php artisan migration
     ```
     
 5. 生成 JWT 所需要的密钥
@@ -96,7 +101,8 @@ composer create-project --prefer-dist laravel/laravel laravel5_5 "5.5.*"
 1. Role
 
     ```php
-    <?php namespace App;
+    <?php 
+    namespace App;
     
     use Zizaco\Entrust\EntrustRole;
     
@@ -109,7 +115,8 @@ composer create-project --prefer-dist laravel/laravel laravel5_5 "5.5.*"
 2. Permission
     
     ```php
-    <?php namespace App;
+    <?php 
+    namespace App;
     
     use Zizaco\Entrust\EntrustPermission;
     
@@ -177,7 +184,7 @@ composer create-project --prefer-dist laravel/laravel laravel5_5 "5.5.*"
     }
     ```
 
-## 使用
+## 使用参考
 
 - dingo/api
 
@@ -261,7 +268,7 @@ composer create-project --prefer-dist laravel/laravel laravel5_5 "5.5.*"
     具体使用详情查看  [https://github.com/Zizaco/entrust](https://github.com/Zizaco/entrust)
     
     
- - auth 例子
+ - JWT 验证登录注册例子:  
  
     Api/Auth/LoginController.php
     
