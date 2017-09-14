@@ -96,6 +96,14 @@ composer create-project --prefer-dist laravel/laravel laravel5_5 "5.5.*"
     API_VERSION=v1
     ```
     
+7. `config/api.php` 下找到并添加
+    
+    ```
+   'auth' => [
+        'jwt' => 'Dingo\Api\Auth\Provider\JWT',
+    ],
+    ```
+    
 ## 创建 Models
 
 1. Role
@@ -338,7 +346,7 @@ composer create-project --prefer-dist laravel/laravel laravel5_5 "5.5.*"
      <?php
      namespace App\Http\ApiControllers\Auth;
      
-     use App\Http\Controllers\Controller;
+     use App\Http\ApiControllers\Controller;
      use Illuminate\Foundation\Auth\RegistersUsers;
      use Illuminate\Http\Request;
      use Illuminate\Support\Facades\Validator;
@@ -366,9 +374,9 @@ composer create-project --prefer-dist laravel/laravel laravel5_5 "5.5.*"
                      "status_code" => 201
                  ];
      
-                 return $this->response->array($result);
+                 return $this->response()->array($result);
              } else {
-                 return $this->response->error("User Not Found...", 404);
+                 return $this->response()->error("User Not Found...", 404);
              }
          }
      
